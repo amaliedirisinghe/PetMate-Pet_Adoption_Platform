@@ -21,14 +21,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
+                    
+                    <li class="nav-item me-3">
+                        <span class="navbar-text" id="userNameDisplay">User</span>
+                    </li>
+
                     <li class="nav-item me-3">
                         <a class="nav-link" href="index.html">
                             <button class="btn btn-outline-primary btn-sm">Home</button>
                         </a>
                     </li>
-                    <li class="nav-item me-3">
-                        <span class="navbar-text" id="userNameDisplay">User</span>
-                    </li>
+                    
                     <li class="nav-item">
                         <button id="logoutBtn" class="btn btn-outline-primary">Logout</button>
                     </li>
@@ -62,6 +65,23 @@
             <h2 class="mb-4">Available Pets</h2>
             <div id="petsContainer" class="row g-4">
                 <!-- Pets will be loaded here via JavaScript -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Added Pets Section -->
+    <section class="my-added-pets-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Added Pets</h2>
+                <button class="btn btn-outline-primary btn-sm" id="refreshMyPetsBtn">🔄 Refresh</button>
+            </div>
+            <div id="myAddedPetsContainer" class="row g-4">
                 <div class="col-12 text-center">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -134,14 +154,20 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="petAge" class="form-label">Age (years)</label>
-                            <input type="number" class="form-control" id="petAge" min="0" step="0.1" required>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="petAgeYears" class="form-label">Age Years</label>
+                                <input type="number" class="form-control" id="petAgeYears" min="0" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="petAgeMonths" class="form-label">Age Months (0–11)</label>
+                                <input type="number" class="form-control" id="petAgeMonths" min="0" max="11" required>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="petPhoto" class="form-label">Photo URL (Optional)</label>
-                            <input type="url" class="form-control" id="petPhoto" placeholder="https://...">
-                            <small class="text-secondary-custom">Leave empty to use default image</small>
+                            <label for="petPhoto" class="form-label">Pet Photo</label>
+                            <input type="file" class="form-control" id="petPhoto" name="petPhoto" accept="image/*" required>
+                            <small class="text-secondary-custom">Upload a photo of the pet (JPG, PNG, etc.)</small>
                         </div>
                         <div class="mb-3">
                             <label for="petDescription" class="form-label">Description</label>
@@ -201,8 +227,9 @@
                 // Load user info for greeting
                 await loadUserInfo();
                 
-                // Load pets and adoption requests
+                // Load pets, my added pets, and adoption requests
                 await loadPets();
+                await loadMyAddedPets();
                 await loadAdoptionRequests();
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
@@ -210,24 +237,32 @@
             }
         });
 
-        // Load user information
+        // Load user information and display in navbar
         async function loadUserInfo() {
             try {
+                // Fetch logged-in user info from backend
                 const response = await fetch('/api/user', {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include' // Include session cookies
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    currentUserId = data.user._id;
+                    currentUserId = data._id;
                     
-                    // Update welcome message and navbar
-                    document.getElementById('welcomeMessage').textContent = `Welcome, ${data.user.name}! 🐾`;
-                    document.getElementById('userNameDisplay').textContent = data.user.name;
+                    // Update welcome message with user's name
+                    document.getElementById('welcomeMessage').textContent = `Welcome, ${data.name}! 🐾`;
+                    
+                    // Update navbar with user's name dynamically
+                    document.getElementById('userNameDisplay').textContent = data.name;
+                } else {
+                    // If not logged in, keep default "User" text
+                    document.getElementById('userNameDisplay').textContent = 'User';
                 }
             } catch (error) {
                 console.error('Error loading user info:', error);
+                // On error, keep default "User" text
+                document.getElementById('userNameDisplay').textContent = 'User';
             }
         }
 
@@ -251,6 +286,26 @@
                 document.getElementById('petsContainer').innerHTML = 
                     '<div class="col-12"><div class="alert alert-danger">Error loading pets. Please refresh the page.</div></div>';
             }
+        }
+
+        // Format pet age: "1 year 6 months", "6 months", or "2 years"
+        function formatPetAge(pet) {
+            let y = 0, m = 0;
+            if (pet.ageYears != null || pet.ageMonths != null) {
+                y = pet.ageYears != null ? parseInt(pet.ageYears, 10) : 0;
+                m = pet.ageMonths != null ? parseInt(pet.ageMonths, 10) : 0;
+            } else if (pet.age != null && !isNaN(pet.age)) {
+                const a = parseFloat(pet.age);
+                y = Math.floor(a);
+                m = Math.round((a % 1) * 12);
+                if (m >= 12) { m = 0; y += 1; }
+            }
+            if (y === 0 && m === 0) return '0 months';
+            if (y === 0) return m === 1 ? '1 month' : m + ' months';
+            if (m === 0) return y === 1 ? '1 year' : y + ' years';
+            const yy = y === 1 ? '1 year' : y + ' years';
+            const mm = m === 1 ? '1 month' : m + ' months';
+            return yy + ' ' + mm;
         }
 
         // Display pets in cards
@@ -280,7 +335,7 @@
                             <h5 class="card-title">${pet.name}</h5>
                             <p class="card-text">
                                 <strong>Type:</strong> ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}<br>
-                                <strong>Age:</strong> ${pet.age} ${pet.age === 1 ? 'year' : 'years'} old
+                                <strong>Age:</strong> ${formatPetAge(pet)}
                             </p>
                             <p class="card-text text-secondary-custom">${pet.description}</p>
                             <button class="btn btn-primary w-100 requestAdoptionBtn" data-pet-id="${pet._id}">
@@ -299,6 +354,76 @@
                 });
             });
         }
+
+        // Load and display user's added pets (My Added Pets section)
+        async function loadMyAddedPets() {
+            if (!currentUserId) {
+                setTimeout(loadMyAddedPets, 500);
+                return;
+            }
+            try {
+                const response = await fetch(`/api/pets/user/${currentUserId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    displayMyAddedPets(data.pets);
+                } else {
+                    document.getElementById('myAddedPetsContainer').innerHTML = 
+                        '<div class="col-12"><div class="alert alert-danger">Failed to load your pets.</div></div>';
+                }
+            } catch (error) {
+                console.error('Error loading my added pets:', error);
+                document.getElementById('myAddedPetsContainer').innerHTML = 
+                    '<div class="col-12"><div class="alert alert-danger">Error loading your pets. Please refresh.</div></div>';
+            }
+        }
+
+        // Display My Added Pets (cards with photo, name, type, age, status badge)
+        function displayMyAddedPets(pets) {
+            const container = document.getElementById('myAddedPetsContainer');
+            const defaultImg = 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop';
+            if (pets.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="card text-center py-5">
+                            <div class="card-body">
+                                <p class="text-secondary-custom">You haven't added any pets yet.</p>
+                                <p class="text-secondary-custom">Use "Add a Pet for Adoption" to get started.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = pets.map(pet => {
+                const statusClass = pet.status === 'approved' ? 'status-approved' : 
+                                   pet.status === 'rejected' ? 'status-blocked' : 'status-pending';
+                const statusText = pet.status.charAt(0).toUpperCase() + pet.status.slice(1);
+                return `
+                    <div class="col-md-4">
+                        <div class="card pet-card h-100">
+                            <img src="${pet.photo}" alt="${pet.name}" class="card-img-top pet-image" 
+                                 onerror="this.src='${defaultImg}'">
+                            <div class="card-body">
+                                <h5 class="card-title">${pet.name}</h5>
+                                <p class="card-text">
+                                    <strong>Type:</strong> ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}<br>
+                                    <strong>Age:</strong> ${formatPetAge(pet)}
+                                </p>
+                                <p class="mb-0"><span class="status-badge ${statusClass}">${statusText}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Refresh My Added Pets
+        document.getElementById('refreshMyPetsBtn').addEventListener('click', function() {
+            loadMyAddedPets();
+        });
 
         // Request adoption for a pet
         async function requestAdoption(petId, buttonElement) {
@@ -403,22 +528,42 @@
             loadAdoptionRequests();
         });
 
-        // Add Pet form submission
+        // Add Pet form submission with file upload
         document.getElementById('submitPetBtn').addEventListener('click', async function() {
             const form = document.getElementById('addPetForm');
             
+            // Validate form
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            const petData = {
-                name: document.getElementById('petName').value,
-                type: document.getElementById('petType').value,
-                age: document.getElementById('petAge').value,
-                description: document.getElementById('petDescription').value,
-                photo: document.getElementById('petPhoto').value || undefined
-            };
+            const years = parseInt(document.getElementById('petAgeYears').value, 10);
+            const months = parseInt(document.getElementById('petAgeMonths').value, 10);
+            if (isNaN(years) || years < 0) {
+                alert('Age years must be 0 or greater.');
+                return;
+            }
+            if (isNaN(months) || months < 0 || months > 11) {
+                alert('Age months must be between 0 and 11.');
+                return;
+            }
+
+            // Get file input
+            const photoFile = document.getElementById('petPhoto').files[0];
+            if (!photoFile) {
+                alert('Please select a photo for the pet.');
+                return;
+            }
+
+            // Create FormData for multipart/form-data upload
+            const formData = new FormData();
+            formData.append('name', document.getElementById('petName').value);
+            formData.append('type', document.getElementById('petType').value);
+            formData.append('ageYears', years);
+            formData.append('ageMonths', months);
+            formData.append('description', document.getElementById('petDescription').value);
+            formData.append('photo', photoFile);
 
             const submitBtn = this;
             const originalText = submitBtn.textContent;
@@ -426,23 +571,21 @@
             submitBtn.textContent = 'Submitting...';
 
             try {
+                // POST to /api/pets with FormData (no Content-Type header - browser sets it automatically with boundary)
                 const response = await fetch('/api/pets', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(petData)
+                    credentials: 'include', // Include session cookies
+                    body: formData // Send FormData (multipart/form-data)
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
                     alert('Pet added successfully! Waiting for admin approval.');
-                    // Close modal and reset form
                     const modal = bootstrap.Modal.getInstance(document.getElementById('addPetModal'));
                     modal.hide();
                     form.reset();
+                    await loadMyAddedPets();
                 } else {
                     alert(data.error || 'Failed to add pet. Please try again.');
                 }

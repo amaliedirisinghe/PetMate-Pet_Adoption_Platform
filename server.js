@@ -45,6 +45,9 @@ app.use(session({
 // Serve static files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname)));
 
+// Serve uploaded images from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const petRoutes = require('./routes/pets');

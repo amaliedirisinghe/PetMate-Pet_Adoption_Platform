@@ -151,7 +151,6 @@ h1, h2, h3, h4, h5, h6, .btn {
 /* Hero Section */
 .hero-section {
     padding: 5rem 0;
-    text-align: center;
 }
 
 .hero-title {
@@ -161,10 +160,23 @@ h1, h2, h3, h4, h5, h6, .btn {
     margin-bottom: 1rem;
 }
 
+.hero-subtitle {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-text);
+    margin-bottom: 1rem;
+}
+
 .hero-tagline {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--secondary-text);
     margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+.hero-image {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
 }
 
 /* Footer */
@@ -256,7 +268,7 @@ h1, h2, h3, h4, h5, h6, .btn {
     background-color: var(--background);
 }
 
-.pets-section, .requests-section {
+.pets-section, .requests-section, .my-added-pets-section {
     background-color: var(--background);
 }
 

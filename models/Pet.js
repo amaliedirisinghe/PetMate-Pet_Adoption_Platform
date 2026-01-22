@@ -13,10 +13,16 @@ const petSchema = new mongoose.Schema({
         trim: true,
         enum: ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'other']
     },
-    age: {
+    ageYears: {
         type: Number,
-        required: [true, 'Pet age is required'],
-        min: [0, 'Age must be a positive number']
+        required: [true, 'Age (years) is required'],
+        min: [0, 'Age years must be 0 or greater']
+    },
+    ageMonths: {
+        type: Number,
+        required: [true, 'Age (months) is required'],
+        min: [0, 'Age months must be between 0 and 11'],
+        max: [11, 'Age months must be between 0 and 11']
     },
     description: {
         type: String,
@@ -43,5 +49,5 @@ const petSchema = new mongoose.Schema({
     }
 });
 
-// Export Pet model
-module.exports = mongoose.model('Pet', petSchema);
+// Export Pet model - explicitly specify 'pets' collection name
+module.exports = mongoose.model('Pet', petSchema, 'pets');

@@ -89,6 +89,13 @@ router.post('/login', async (req, res) => {
             req.session.userId = user._id.toString();
             req.session.userEmail = user.email;
             req.session.userName = user.name;
+            // Set req.session.user object for easy access
+            req.session.user = {
+                _id: user._id.toString(),
+                name: user.name,
+                email: user.email,
+                status: user.status
+            };
             
             return res.json({ 
                 redirect: 'dashboard',
@@ -149,20 +156,18 @@ router.get('/user/status', async (req, res) => {
 router.get('/user', async (req, res) => {
     try {
         // Check if user is logged in via session
-        if (!req.session.userId) {
+        if (!req.session.user) {
             return res.status(401).json({ 
-                error: 'Authentication required' 
+                error: 'Not logged in' 
             });
         }
 
-        const user = await User.findById(req.session.userId).select('-password');
-        if (!user) {
-            return res.status(404).json({ 
-                error: 'User not found' 
-            });
-        }
-
-        res.json({ user });
+        // Return user info from session
+        res.json({ 
+            name: req.session.user.name,
+            email: req.session.user.email,
+            _id: req.session.user._id
+        });
     } catch (error) {
         console.error('Error fetching user:', error);
         res.status(500).json({ 
