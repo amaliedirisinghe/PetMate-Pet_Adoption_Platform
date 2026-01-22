@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - PetMate</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">PetMate</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <span class="navbar-text" id="adminNameDisplay">Admin</span>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="index.html">
+                            <button class="btn btn-outline-primary btn-sm">Home</button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logoutBtn" class="btn btn-outline-primary">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <section class="welcome-section py-4">
+        <div class="container">
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <h1 class="mb-3" id="welcomeMessage">Admin Dashboard 🛡️</h1>
+                    <p class="text-secondary-custom mb-3">
+                        Manage users, pets, and adoption requests
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics / Summary Section -->
+    <section class="analytics-section py-5">
+        <div class="container">
+            <h2 class="mb-4">Dashboard Summary</h2>
+            <div class="row g-4" id="analyticsContainer">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-2" id="pendingUsersCount">0</h3>
+                            <p class="text-secondary-custom mb-0">Pending Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-2" id="pendingPetsCount">0</h3>
+                            <p class="text-secondary-custom mb-0">Pending Pets</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-2" id="approvedPetsCount">0</h3>
+                            <p class="text-secondary-custom mb-0">Approved Pets</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-2" id="adoptionRequestsCount">0</h3>
+                            <p class="text-secondary-custom mb-0">Adoption Requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pending Users Section -->
+    <section class="pending-users-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Pending Users</h2>
+                <button class="btn btn-outline-primary btn-sm" id="refreshUsersBtn">🔄 Refresh</button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registration Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingUsersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pending Pets Section -->
+    <section class="pending-pets-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Pending Pets</h2>
+                <button class="btn btn-outline-primary btn-sm" id="refreshPetsBtn">🔄 Refresh</button>
+            </div>
+            <div id="pendingPetsContainer" class="row g-4">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Actions / Audit Logs Section -->
+    <section class="audit-logs-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Recent Admin Actions</h2>
+                <button class="btn btn-outline-primary btn-sm" id="refreshActionsBtn">🔄 Refresh</button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Target</th>
+                                    <th>Details</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminActionsTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">PetMate – University Project</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Admin Dashboard Logic -->
+    <script>
+        let currentAdminId = null;
+
+        // Check if admin is logged in and has admin role
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if user has valid session and is admin
+                const userResponse = await fetch('/api/user', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!userResponse.ok) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const userData = await userResponse.json();
+                
+                // Check if user is admin
+                if (userData.role !== 'admin') {
+                    // Redirect to appropriate dashboard
+                    if (userData.role === 'user') {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                    return;
+                }
+
+                currentAdminId = userData._id;
+                
+                // Load admin info
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${userData.name}! 🛡️`;
+                document.getElementById('adminNameDisplay').textContent = userData.name;
+                
+                // Load all data
+                await loadAnalytics();
+                await loadPendingUsers();
+                await loadPendingPets();
+                await loadAdminActions();
+            } catch (error) {
+                console.error('Error initializing admin dashboard:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load analytics/summary
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/admin/analytics', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('pendingUsersCount').textContent = data.analytics.pendingUsers;
+                    document.getElementById('pendingPetsCount').textContent = data.analytics.pendingPets;
+                    document.getElementById('approvedPetsCount').textContent = data.analytics.approvedPets;
+                    document.getElementById('adoptionRequestsCount').textContent = data.analytics.adoptionRequests;
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        // Load pending users
+        async function loadPendingUsers() {
+            try {
+                const response = await fetch('/api/admin/users/pending', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPendingUsers(data.users);
+                } else {
+                    document.getElementById('pendingUsersTableBody').innerHTML = 
+                        '<tr><td colspan="6" class="text-center text-danger">Failed to load pending users.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading pending users:', error);
+                document.getElementById('pendingUsersTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center text-danger">Error loading pending users.</td></tr>';
+            }
+        }
+
+        // Display pending users in table
+        function displayPendingUsers(users) {
+            const tbody = document.getElementById('pendingUsersTableBody');
+
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-secondary-custom">
+                            No pending users at the moment.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => {
+                const regDate = new Date(user.registrationDate || user.createdAt).toLocaleDateString();
+                return `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone || 'N/A'}</td>
+                        <td>${regDate}</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-2 approveUserBtn" data-user-id="${user._id}">
+                                Approve
+                            </button>
+                            <button class="btn btn-danger btn-sm blockUserBtn" data-user-id="${user._id}">
+                                Block
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Add event listeners
+            document.querySelectorAll('.approveUserBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    approveUser(userId, this);
+                });
+            });
+
+            document.querySelectorAll('.blockUserBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    blockUser(userId, this);
+                });
+            });
+        }
+
+        // Approve user
+        async function approveUser(userId, buttonElement) {
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}/approve`, {
+                    method: 'PATCH',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('User approved successfully!');
+                    await loadPendingUsers();
+                    await loadAnalytics();
+                    await loadAdminActions();
+                } else {
+                    alert(data.error || 'Failed to approve user.');
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error approving user:', error);
+                alert('Error approving user. Please try again.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        // Block user
+        async function blockUser(userId, buttonElement) {
+            if (!confirm('Are you sure you want to block this user?')) {
+                return;
+            }
+
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}/block`, {
+                    method: 'PATCH',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('User blocked successfully!');
+                    await loadPendingUsers();
+                    await loadAnalytics();
+                    await loadAdminActions();
+                } else {
+                    alert(data.error || 'Failed to block user.');
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error blocking user:', error);
+                alert('Error blocking user. Please try again.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        // Load pending pets
+        async function loadPendingPets() {
+            try {
+                const response = await fetch('/api/admin/pets/pending', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPendingPets(data.pets);
+                } else {
+                    document.getElementById('pendingPetsContainer').innerHTML = 
+                        '<div class="col-12"><div class="alert alert-danger">Failed to load pending pets.</div></div>';
+                }
+            } catch (error) {
+                console.error('Error loading pending pets:', error);
+                document.getElementById('pendingPetsContainer').innerHTML = 
+                    '<div class="col-12"><div class="alert alert-danger">Error loading pending pets.</div></div>';
+            }
+        }
+
+        // Format pet age
+        function formatPetAge(pet) {
+            const y = pet.ageYears || 0;
+            const m = pet.ageMonths || 0;
+            if (y === 0 && m === 0) return '0 months';
+            if (y === 0) return m === 1 ? '1 month' : m + ' months';
+            if (m === 0) return y === 1 ? '1 year' : y + ' years';
+            const yy = y === 1 ? '1 year' : y + ' years';
+            const mm = m === 1 ? '1 month' : m + ' months';
+            return yy + ' ' + mm;
+        }
+
+        // Display pending pets in cards
+        function displayPendingPets(pets) {
+            const container = document.getElementById('pendingPetsContainer');
+            const defaultImg = 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop';
+
+            if (pets.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="card text-center py-5">
+                            <div class="card-body">
+                                <p class="text-secondary-custom">No pending pets at the moment.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = pets.map(pet => {
+                const addedBy = pet.addedBy ? pet.addedBy.name : 'Unknown';
+                const addedByEmail = pet.addedBy ? pet.addedBy.email : 'N/A';
+                return `
+                    <div class="col-md-4">
+                        <div class="card pet-card h-100">
+                            <img src="${pet.photo}" alt="${pet.name}" class="card-img-top pet-image" 
+                                 style="height:200px; width:100%; object-fit: contain;"
+                                 onerror="this.src='${defaultImg}'">
+                            <div class="card-body">
+                                <h5 class="card-title">${pet.name}</h5>
+                                <p class="card-text">
+                                    <strong>Type:</strong> ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}<br>
+                                    <strong>Age:</strong> ${formatPetAge(pet)}<br>
+                                    <strong>Added by:</strong> ${addedBy} (${addedByEmail})
+                                </p>
+                                <p class="card-text text-secondary-custom">${pet.description}</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary approvePetBtn" data-pet-id="${pet._id}">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-danger rejectPetBtn" data-pet-id="${pet._id}">
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners
+            document.querySelectorAll('.approvePetBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const petId = this.getAttribute('data-pet-id');
+                    approvePet(petId, this);
+                });
+            });
+
+            document.querySelectorAll('.rejectPetBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const petId = this.getAttribute('data-pet-id');
+                    rejectPet(petId, this);
+                });
+            });
+        }
+
+        // Approve pet
+        async function approvePet(petId, buttonElement) {
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`/api/admin/pets/${petId}/approve`, {
+                    method: 'PATCH',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Pet approved successfully!');
+                    await loadPendingPets();
+                    await loadAnalytics();
+                    await loadAdminActions();
+                } else {
+                    alert(data.error || 'Failed to approve pet.');
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error approving pet:', error);
+                alert('Error approving pet. Please try again.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        // Reject pet
+        async function rejectPet(petId, buttonElement) {
+            if (!confirm('Are you sure you want to reject this pet?')) {
+                return;
+            }
+
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`/api/admin/pets/${petId}/reject`, {
+                    method: 'PATCH',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Pet rejected successfully!');
+                    await loadPendingPets();
+                    await loadAnalytics();
+                    await loadAdminActions();
+                } else {
+                    alert(data.error || 'Failed to reject pet.');
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error rejecting pet:', error);
+                alert('Error rejecting pet. Please try again.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        // Load admin actions (audit logs)
+        async function loadAdminActions() {
+            try {
+                const response = await fetch('/api/admin/actions?limit=50', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayAdminActions(data.actions);
+                } else {
+                    document.getElementById('adminActionsTableBody').innerHTML = 
+                        '<tr><td colspan="5" class="text-center text-danger">Failed to load admin actions.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading admin actions:', error);
+                document.getElementById('adminActionsTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="text-center text-danger">Error loading admin actions.</td></tr>';
+            }
+        }
+
+        // Display admin actions in table
+        function displayAdminActions(actions) {
+            const tbody = document.getElementById('adminActionsTableBody');
+
+            if (actions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary-custom">
+                            No admin actions recorded yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = actions.map(action => {
+                const adminName = action.adminId ? action.adminId.name : 'Unknown';
+                const actionTypeText = action.actionType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const timestamp = new Date(action.timestamp).toLocaleString();
+                return `
+                    <tr>
+                        <td>${adminName}</td>
+                        <td>${actionTypeText}</td>
+                        <td>${action.targetType}</td>
+                        <td>${action.details || 'N/A'}</td>
+                        <td>${timestamp}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Refresh buttons
+        document.getElementById('refreshUsersBtn').addEventListener('click', function() {
+            loadPendingUsers();
+            loadAnalytics();
+        });
+
+        document.getElementById('refreshPetsBtn').addEventListener('click', function() {
+            loadPendingPets();
+            loadAnalytics();
+        });
+
+        document.getElementById('refreshActionsBtn').addEventListener('click', function() {
+            loadAdminActions();
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userStatus');
+                
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userStatus');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

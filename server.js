@@ -52,10 +52,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const authRoutes = require('./routes/auth');
 const petRoutes = require('./routes/pets');
 const adoptionRequestRoutes = require('./routes/adoptionRequests');
+const adminRoutes = require('./routes/admin');
 
 app.use('/api', authRoutes);
 app.use('/api', petRoutes);
 app.use('/api', adoptionRequestRoutes);
+app.use('/api', adminRoutes);
 
 // Serve HTML files
 app.get('/', (req, res) => {
@@ -74,11 +76,49 @@ app.get('/status.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'status.html'));
 });
 
-app.get('/dashboard.html', (req, res) => {
+app.get('/dashboard.html', async (req, res) => {
     // Check if user is logged in
-    if (req.session.userId) {
+    if (!req.session.userId) {
+        return res.redirect('/login.html');
+    }
+    
+    try {
+        const User = require('./models/User');
+        const user = await User.findById(req.session.userId);
+        
+        // If user is admin, redirect to admin dashboard
+        if (user && user.role === 'admin' && user.status === 'active') {
+            return res.redirect('/admin-dashboard.html');
+        }
+        
         res.sendFile(path.join(__dirname, 'dashboard.html'));
-    } else {
+    } catch (error) {
+        console.error('Error checking user access:', error);
+        res.sendFile(path.join(__dirname, 'dashboard.html'));
+    }
+});
+
+app.get('/admin-dashboard.html', async (req, res) => {
+    // Check if user is logged in and is admin
+    if (!req.session.userId) {
+        return res.redirect('/login.html');
+    }
+    
+    try {
+        const User = require('./models/User');
+        const user = await User.findById(req.session.userId);
+        
+        if (!user || user.role !== 'admin' || user.status !== 'active') {
+            // Not an admin, redirect to appropriate dashboard
+            if (user && user.role === 'user') {
+                return res.redirect('/dashboard.html');
+            }
+            return res.redirect('/login.html');
+        }
+        
+        res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
+    } catch (error) {
+        console.error('Error checking admin access:', error);
         res.redirect('/login.html');
     }
 });

@@ -119,8 +119,11 @@
                     if (data.redirect === 'status') {
                         // Status is pending, redirect to status page
                         window.location.href = 'status.html';
+                    } else if (data.redirect === 'admin-dashboard') {
+                        // Admin user, redirect to admin dashboard
+                        window.location.href = 'admin-dashboard.html';
                     } else if (data.redirect === 'dashboard') {
-                        // Status is active, redirect to dashboard
+                        // Regular user, redirect to user dashboard
                         window.location.href = 'dashboard.html';
                     } else {
                         // Unknown redirect

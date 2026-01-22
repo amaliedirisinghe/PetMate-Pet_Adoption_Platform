@@ -89,18 +89,28 @@ router.post('/login', async (req, res) => {
             req.session.userId = user._id.toString();
             req.session.userEmail = user.email;
             req.session.userName = user.name;
+            req.session.userRole = user.role;
             // Set req.session.user object for easy access
             req.session.user = {
                 _id: user._id.toString(),
                 name: user.name,
                 email: user.email,
-                status: user.status
+                status: user.status,
+                role: user.role
             };
             
-            return res.json({ 
-                redirect: 'dashboard',
-                message: 'Login successful'
-            });
+            // Role-based redirect
+            if (user.role === 'admin') {
+                return res.json({ 
+                    redirect: 'admin-dashboard',
+                    message: 'Login successful'
+                });
+            } else {
+                return res.json({ 
+                    redirect: 'dashboard',
+                    message: 'Login successful'
+                });
+            }
         } else {
             return res.status(500).json({ 
                 error: 'Unknown account status' 
@@ -166,7 +176,8 @@ router.get('/user', async (req, res) => {
         res.json({ 
             name: req.session.user.name,
             email: req.session.user.email,
-            _id: req.session.user._id
+            _id: req.session.user._id,
+            role: req.session.user.role || 'user'
         });
     } catch (error) {
         console.error('Error fetching user:', error);
