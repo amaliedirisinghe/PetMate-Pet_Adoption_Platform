@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Status - PetMate</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">PetMate</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <button class="btn btn-outline-primary me-2">Login</button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">
+                            <button class="btn btn-primary">Register</button>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Status Card -->
+    <div class="container container-custom mt-5 mb-5">
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <!-- Icon -->
+                <div class="icon-large">⏳</div>
+                
+                <h2 class="mb-3">Account Under Review</h2>
+                <p class="text-secondary-custom mb-4">
+                    Your account is currently under admin review. We'll notify you once your account has been approved.
+                </p>
+                
+                <!-- Status Badge -->
+                <div class="mb-4">
+                    <span class="status-badge status-pending">🟡 Pending Approval</span>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <button id="checkStatusBtn" class="btn btn-primary btn-lg me-md-2">Check Status</button>
+                    <a href="index.html" class="btn btn-outline-primary btn-lg">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">PetMate – University Project</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Status Check Logic -->
+    <script>
+        // Function to check account status via API
+        async function checkStatus() {
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (!userEmail) {
+                // No user email found, redirect to register
+                window.location.href = 'register.html';
+                return;
+            }
+            
+            // Show loading state
+            const checkBtn = document.getElementById('checkStatusBtn');
+            const originalText = checkBtn.textContent;
+            checkBtn.disabled = true;
+            checkBtn.textContent = 'Checking...';
+            
+            try {
+                // GET request to /api/user/status endpoint
+                const response = await fetch(`/api/user/status?email=${encodeURIComponent(userEmail)}`, {
+                    method: 'GET',
+                    credentials: 'include' // Include cookies for session
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update status display
+                    updateStatusDisplay(data.status);
+                    
+                    // If status is active, redirect to login
+                    if (data.status === 'active') {
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1500);
+                    } else {
+                        // Re-enable button if status is not active
+                        checkBtn.disabled = false;
+                        checkBtn.textContent = originalText;
+                    }
+                } else {
+                    // Error checking status
+                    alert(data.error || 'Failed to check status. Please try again.');
+                    checkBtn.disabled = false;
+                    checkBtn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+                alert('Failed to check status. Please check your connection and try again.');
+                checkBtn.disabled = false;
+                checkBtn.textContent = originalText;
+            }
+        }
+        
+        // Function to update status display
+        function updateStatusDisplay(status) {
+            const statusBadge = document.querySelector('.status-badge');
+            const message = document.querySelector('.card-body p');
+            const icon = document.querySelector('.icon-large');
+            
+            if (status === 'active') {
+                statusBadge.className = 'status-badge status-approved';
+                statusBadge.textContent = '✅ Account Approved';
+                message.textContent = 'Great news! Your account has been approved. Redirecting to login...';
+                icon.textContent = '✅';
+            } else if (status === 'blocked') {
+                statusBadge.className = 'status-badge status-blocked';
+                statusBadge.textContent = '❌ Account Blocked';
+                message.textContent = 'Your account has been blocked. Please contact support for assistance.';
+                icon.textContent = '❌';
+            } else {
+                // pending
+                statusBadge.className = 'status-badge status-pending';
+                statusBadge.textContent = '🟡 Pending Approval';
+                message.textContent = 'Your account is currently under admin review. We\'ll notify you once your account has been approved.';
+                icon.textContent = '⏳';
+            }
+        }
+        
+        // Check status on page load
+        window.addEventListener('DOMContentLoaded', async function() {
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (userEmail) {
+                try {
+                    // Check status on page load
+                    const response = await fetch(`/api/user/status?email=${encodeURIComponent(userEmail)}`, {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        updateStatusDisplay(data.status);
+                        
+                        // If status is active, redirect to login
+                        if (data.status === 'active') {
+                            setTimeout(() => {
+                                window.location.href = 'login.html';
+                            }, 1500);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking status on load:', error);
+                    // Default to pending if check fails
+                    updateStatusDisplay('pending');
+                }
+            } else {
+                // No email found, default to pending
+                updateStatusDisplay('pending');
+            }
+        });
+        
+        // Add event listener to check status button
+        document.getElementById('checkStatusBtn').addEventListener('click', checkStatus);
+    </script>
+</body>
+</html>

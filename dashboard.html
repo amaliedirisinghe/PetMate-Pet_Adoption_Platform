@@ -56,24 +56,62 @@
     
     <!-- Dashboard Logic -->
     <script>
-        // Check if user is logged in
-        window.addEventListener('DOMContentLoaded', function() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const userStatus = localStorage.getItem('userStatus');
-            
-            // If not logged in or status is not active, redirect to login
-            if (!isLoggedIn || userStatus !== 'active') {
+        // Check if user is logged in via session
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if user has valid session by calling status endpoint
+                const response = await fetch('/api/user/status', {
+                    method: 'GET',
+                    credentials: 'include' // Include cookies for session
+                });
+                
+                if (!response.ok) {
+                    // No valid session, redirect to login
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                // If status is not active, redirect accordingly
+                if (data.status === 'pending') {
+                    window.location.href = 'status.html';
+                } else if (data.status === 'blocked') {
+                    alert('Your account has been blocked. Please contact support.');
+                    window.location.href = 'login.html';
+                } else if (data.status !== 'active') {
+                    window.location.href = 'login.html';
+                }
+                // If status is active, user can stay on dashboard
+            } catch (error) {
+                console.error('Error checking session:', error);
+                // On error, redirect to login
                 window.location.href = 'login.html';
             }
         });
         
         // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            // Clear login status
-            localStorage.removeItem('isLoggedIn');
-            
-            // Redirect to homepage
-            window.location.href = 'index.html';
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            try {
+                // Call logout API endpoint
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                // Clear localStorage
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userStatus');
+                
+                // Redirect to homepage
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Even if logout fails, clear local storage and redirect
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userStatus');
+                window.location.href = 'index.html';
+            }
         });
     </script>
 </body>

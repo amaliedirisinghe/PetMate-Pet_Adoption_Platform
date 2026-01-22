@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PetMate</title>
+    <title>Register - PetMate</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -36,31 +36,36 @@
         </div>
     </nav>
 
-    <!-- Login Form -->
+    <!-- Registration Form -->
     <div class="container container-custom mt-5 mb-5">
         <div class="card">
             <div class="card-body">
-                <h2 class="text-center mb-4">Welcome Back</h2>
-                <p class="text-center text-secondary-custom mb-4">Login to your PetMate account</p>
+                <h2 class="text-center mb-4">Create Your Account</h2>
+                <p class="text-center text-secondary-custom mb-4">Join PetMate and start your adoption journey</p>
                 
-                <!-- Error Alert (hidden by default) -->
-                <div id="errorAlert" class="alert alert-danger" role="alert" style="display: none;">
-                    <strong>Login Failed:</strong> <span id="errorMessage"></span>
-                </div>
-                
-                <form id="loginForm">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="email" class="form-label">Email Address</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
                     
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     
+                    <div class="mb-4">
+                        <label for="phone" class="form-label">Phone Number <span class="text-secondary-custom">(Optional)</span></label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+                    
                     <div class="d-grid gap-2 mb-3">
-                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
                     </div>
                     
                     <div class="text-center">
@@ -81,74 +86,57 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Login Logic -->
+    <!-- Registration Logic -->
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // Hide any previous error messages
-            document.getElementById('errorAlert').style.display = 'none';
             
             // Get form data
             const formData = {
+                name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                password: document.getElementById('password').value
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value
             };
             
             // Show loading state
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Logging in...';
+            submitBtn.textContent = 'Registering...';
             
             try {
-                // POST to /api/login endpoint
-                const response = await fetch('/api/login', {
+                // POST to /api/register endpoint
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    credentials: 'include', // Include cookies for session
                     body: JSON.stringify(formData)
                 });
                 
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Login successful - check redirect status
-                    if (data.redirect === 'status') {
-                        // Status is pending, redirect to status page
-                        window.location.href = 'status.html';
-                    } else if (data.redirect === 'dashboard') {
-                        // Status is active, redirect to dashboard
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        // Unknown redirect
-                        showError('Login successful but unable to redirect. Please try again.');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
-                    }
+                    // Registration successful
+                    // Store user email in localStorage for status page
+                    localStorage.setItem('userEmail', formData.email);
+                    
+                    // Redirect to status page (do not log in)
+                    window.location.href = 'status.html';
                 } else {
-                    // Login failed - show error
-                    showError(data.error || 'Login failed. Please try again.');
+                    // Registration failed - show error
+                    alert(data.error || 'Registration failed. Please try again.');
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
                 }
             } catch (error) {
-                console.error('Login error:', error);
-                showError('Login failed. Please check your connection and try again.');
+                console.error('Registration error:', error);
+                alert('Registration failed. Please check your connection and try again.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
             }
         });
-        
-        // Function to display error message
-        function showError(message) {
-            const errorAlert = document.getElementById('errorAlert');
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorAlert.style.display = 'block';
-        }
     </script>
 </body>
 </html>
