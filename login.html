@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PetMate</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">PetMate</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <button class="btn btn-outline-primary me-2">Login</button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">
+                            <button class="btn btn-primary">Register</button>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container container-custom mt-5 mb-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="text-center mb-4">Welcome Back</h2>
+                <p class="text-center text-secondary-custom mb-4">Login to your PetMate account</p>
+                
+                <!-- Error Alert (hidden by default) -->
+                <div id="errorAlert" class="alert alert-danger" role="alert" style="display: none;">
+                    <strong>Login Failed:</strong> <span id="errorMessage"></span>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="index.html" class="btn btn-outline-primary">Back to Home</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">PetMate – University Project</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Login Logic -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Hide any previous error messages
+            document.getElementById('errorAlert').style.display = 'none';
+            
+            // Get form data
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            // Simulate API call to login endpoint
+            // In a real app, this would be: fetch('/api/login', { method: 'POST', body: JSON.stringify(formData) })
+            try {
+                console.log('Logging in user:', formData.email);
+                
+                // Simulate API response delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Check if user exists in localStorage (simulating database check)
+                const storedEmail = localStorage.getItem('userEmail');
+                const userStatus = localStorage.getItem('userStatus') || 'pending';
+                
+                // Simulate authentication check
+                if (storedEmail && storedEmail === formData.email) {
+                    // Check account status and redirect accordingly
+                    if (userStatus === 'pending') {
+                        // Status is pending, redirect to status page
+                        window.location.href = 'status.html';
+                    } else if (userStatus === 'active') {
+                        // Status is active, login successful - redirect to dashboard
+                        localStorage.setItem('isLoggedIn', 'true');
+                        window.location.href = 'dashboard.html';
+                    } else if (userStatus === 'blocked') {
+                        // Status is blocked, show friendly error
+                        showError('Your account has been blocked. Please contact support for assistance.');
+                    } else {
+                        // Unknown status
+                        showError('Unable to verify account status. Please try again.');
+                    }
+                } else {
+                    // User not found or incorrect credentials
+                    showError('Invalid email or password. Please try again.');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please try again.');
+            }
+        });
+        
+        // Function to display error message
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
