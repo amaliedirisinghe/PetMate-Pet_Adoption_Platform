@@ -47,7 +47,12 @@ app.use(express.static(path.join(__dirname)));
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const petRoutes = require('./routes/pets');
+const adoptionRequestRoutes = require('./routes/adoptionRequests');
+
 app.use('/api', authRoutes);
+app.use('/api', petRoutes);
+app.use('/api', adoptionRequestRoutes);
 
 // Serve HTML files
 app.get('/', (req, res) => {

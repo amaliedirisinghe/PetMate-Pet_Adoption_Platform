@@ -145,4 +145,30 @@ router.get('/user/status', async (req, res) => {
     }
 });
 
+// GET /api/user - Get current logged-in user info
+router.get('/user', async (req, res) => {
+    try {
+        // Check if user is logged in via session
+        if (!req.session.userId) {
+            return res.status(401).json({ 
+                error: 'Authentication required' 
+            });
+        }
+
+        const user = await User.findById(req.session.userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ 
+                error: 'User not found' 
+            });
+        }
+
+        res.json({ user });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch user information' 
+        });
+    }
+});
+
 module.exports = router;

@@ -20,7 +20,15 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="index.html">
+                            <button class="btn btn-outline-primary btn-sm">Home</button>
+                        </a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <span class="navbar-text" id="userNameDisplay">User</span>
+                    </li>
                     <li class="nav-item">
                         <button id="logoutBtn" class="btn btn-outline-primary">Logout</button>
                     </li>
@@ -29,17 +37,122 @@
         </div>
     </nav>
 
-    <!-- Dashboard Content -->
-    <div class="container mt-5 mb-5">
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <h1 class="mb-4">Welcome to PetMate 🐾</h1>
-                <p class="text-secondary-custom mb-4">
-                    You're successfully logged in! This is your dashboard.
-                </p>
-                <p class="text-secondary-custom">
-                    More features coming soon...
-                </p>
+    <!-- Welcome Section -->
+    <section class="welcome-section py-4">
+        <div class="container">
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <h1 class="mb-3" id="welcomeMessage">Welcome to PetMate 🐾</h1>
+                    <p class="text-secondary-custom mb-3">
+                        Here are the pets available for adoption near you!
+                    </p>
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addPetModal">
+                            ➕ Add a Pet for Adoption
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pets Section -->
+    <section class="pets-section py-5">
+        <div class="container">
+            <h2 class="mb-4">Available Pets</h2>
+            <div id="petsContainer" class="row g-4">
+                <!-- Pets will be loaded here via JavaScript -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Requests Section -->
+    <section class="requests-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Adoption Requests</h2>
+                <button class="btn btn-outline-primary btn-sm" id="refreshRequestsBtn">
+                    🔄 Refresh
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pet Name</th>
+                                    <th>Type</th>
+                                    <th>Request Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTableBody">
+                                <tr>
+                                    <td colspan="4" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Pet Modal -->
+    <div class="modal fade" id="addPetModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a Pet for Adoption</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPetForm">
+                        <div class="mb-3">
+                            <label for="petName" class="form-label">Pet Name</label>
+                            <input type="text" class="form-control" id="petName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="petType" class="form-label">Type</label>
+                            <select class="form-select" id="petType" required>
+                                <option value="">Select type...</option>
+                                <option value="dog">Dog</option>
+                                <option value="cat">Cat</option>
+                                <option value="bird">Bird</option>
+                                <option value="rabbit">Rabbit</option>
+                                <option value="hamster">Hamster</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="petAge" class="form-label">Age (years)</label>
+                            <input type="number" class="form-control" id="petAge" min="0" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="petPhoto" class="form-label">Photo URL (Optional)</label>
+                            <input type="url" class="form-control" id="petPhoto" placeholder="https://...">
+                            <small class="text-secondary-custom">Leave empty to use default image</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="petDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="petDescription" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitPetBtn">Submit</button>
+                </div>
             </div>
         </div>
     </div>
@@ -56,37 +169,289 @@
     
     <!-- Dashboard Logic -->
     <script>
-        // Check if user is logged in via session
+        let currentUserId = null;
+
+        // Check if user is logged in via session and load user data
         window.addEventListener('DOMContentLoaded', async function() {
             try {
                 // Check if user has valid session by calling status endpoint
-                const response = await fetch('/api/user/status', {
+                const statusResponse = await fetch('/api/user/status', {
                     method: 'GET',
-                    credentials: 'include' // Include cookies for session
+                    credentials: 'include'
                 });
                 
-                if (!response.ok) {
+                if (!statusResponse.ok) {
                     // No valid session, redirect to login
                     window.location.href = 'login.html';
                     return;
                 }
                 
-                const data = await response.json();
+                const statusData = await statusResponse.json();
                 
                 // If status is not active, redirect accordingly
-                if (data.status === 'pending') {
+                if (statusData.status === 'pending') {
                     window.location.href = 'status.html';
-                } else if (data.status === 'blocked') {
+                } else if (statusData.status === 'blocked') {
                     alert('Your account has been blocked. Please contact support.');
                     window.location.href = 'login.html';
-                } else if (data.status !== 'active') {
+                } else if (statusData.status !== 'active') {
                     window.location.href = 'login.html';
                 }
-                // If status is active, user can stay on dashboard
+
+                // Load user info for greeting
+                await loadUserInfo();
+                
+                // Load pets and adoption requests
+                await loadPets();
+                await loadAdoptionRequests();
             } catch (error) {
-                console.error('Error checking session:', error);
-                // On error, redirect to login
+                console.error('Error initializing dashboard:', error);
                 window.location.href = 'login.html';
+            }
+        });
+
+        // Load user information
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/user', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUserId = data.user._id;
+                    
+                    // Update welcome message and navbar
+                    document.getElementById('welcomeMessage').textContent = `Welcome, ${data.user.name}! 🐾`;
+                    document.getElementById('userNameDisplay').textContent = data.user.name;
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+            }
+        }
+
+        // Load and display all approved pets
+        async function loadPets() {
+            try {
+                const response = await fetch('/api/pets', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPets(data.pets);
+                } else {
+                    document.getElementById('petsContainer').innerHTML = 
+                        '<div class="col-12"><div class="alert alert-danger">Failed to load pets. Please try again.</div></div>';
+                }
+            } catch (error) {
+                console.error('Error loading pets:', error);
+                document.getElementById('petsContainer').innerHTML = 
+                    '<div class="col-12"><div class="alert alert-danger">Error loading pets. Please refresh the page.</div></div>';
+            }
+        }
+
+        // Display pets in cards
+        function displayPets(pets) {
+            const container = document.getElementById('petsContainer');
+            
+            if (pets.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="card text-center py-5">
+                            <div class="card-body">
+                                <p class="text-secondary-custom">No pets available for adoption at the moment.</p>
+                                <p class="text-secondary-custom">Check back later or add a pet for adoption!</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = pets.map(pet => `
+                <div class="col-md-4">
+                    <div class="card pet-card h-100">
+                        <img src="${pet.photo}" alt="${pet.name}" class="card-img-top pet-image" 
+                             onerror="this.src='https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop'">
+                        <div class="card-body">
+                            <h5 class="card-title">${pet.name}</h5>
+                            <p class="card-text">
+                                <strong>Type:</strong> ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}<br>
+                                <strong>Age:</strong> ${pet.age} ${pet.age === 1 ? 'year' : 'years'} old
+                            </p>
+                            <p class="card-text text-secondary-custom">${pet.description}</p>
+                            <button class="btn btn-primary w-100 requestAdoptionBtn" data-pet-id="${pet._id}">
+                                Request Adoption
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add event listeners to request adoption buttons
+            document.querySelectorAll('.requestAdoptionBtn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const petId = this.getAttribute('data-pet-id');
+                    requestAdoption(petId, this);
+                });
+            });
+        }
+
+        // Request adoption for a pet
+        async function requestAdoption(petId, buttonElement) {
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/api/adoption-requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ petId: petId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Adoption request submitted successfully!');
+                    buttonElement.textContent = 'Request Submitted';
+                    buttonElement.classList.remove('btn-primary');
+                    buttonElement.classList.add('btn-secondary');
+                    // Reload adoption requests to show the new one
+                    await loadAdoptionRequests();
+                } else {
+                    alert(data.error || 'Failed to submit adoption request. Please try again.');
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error requesting adoption:', error);
+                alert('Error submitting request. Please try again.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        // Load and display user's adoption requests
+        async function loadAdoptionRequests() {
+            if (!currentUserId) {
+                // Wait a bit for user info to load
+                setTimeout(loadAdoptionRequests, 500);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/adoption-requests/user/${currentUserId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayAdoptionRequests(data.adoptionRequests);
+                } else {
+                    document.getElementById('requestsTableBody').innerHTML = 
+                        '<tr><td colspan="4" class="text-center text-danger">Failed to load requests. Please try again.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading adoption requests:', error);
+                document.getElementById('requestsTableBody').innerHTML = 
+                    '<tr><td colspan="4" class="text-center text-danger">Error loading requests. Please refresh.</td></tr>';
+            }
+        }
+
+        // Display adoption requests in table
+        function displayAdoptionRequests(requests) {
+            const tbody = document.getElementById('requestsTableBody');
+
+            if (requests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-secondary-custom">
+                            You haven't made any adoption requests yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = requests.map(request => {
+                const statusClass = request.status === 'approved' ? 'status-approved' : 
+                                   request.status === 'rejected' ? 'status-blocked' : 'status-pending';
+                const statusText = request.status.charAt(0).toUpperCase() + request.status.slice(1);
+                const requestDate = new Date(request.requestDate).toLocaleDateString();
+                
+                return `
+                    <tr>
+                        <td>${request.petId ? request.petId.name : 'Unknown'}</td>
+                        <td>${request.petId ? request.petId.type.charAt(0).toUpperCase() + request.petId.type.slice(1) : 'N/A'}</td>
+                        <td>${requestDate}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Refresh adoption requests
+        document.getElementById('refreshRequestsBtn').addEventListener('click', function() {
+            loadAdoptionRequests();
+        });
+
+        // Add Pet form submission
+        document.getElementById('submitPetBtn').addEventListener('click', async function() {
+            const form = document.getElementById('addPetForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const petData = {
+                name: document.getElementById('petName').value,
+                type: document.getElementById('petType').value,
+                age: document.getElementById('petAge').value,
+                description: document.getElementById('petDescription').value,
+                photo: document.getElementById('petPhoto').value || undefined
+            };
+
+            const submitBtn = this;
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/api/pets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(petData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Pet added successfully! Waiting for admin approval.');
+                    // Close modal and reset form
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addPetModal'));
+                    modal.hide();
+                    form.reset();
+                } else {
+                    alert(data.error || 'Failed to add pet. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding pet:', error);
+                alert('Error adding pet. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
         
