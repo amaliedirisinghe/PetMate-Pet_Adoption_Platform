@@ -167,6 +167,79 @@ async function rejectPetFunction(adminId, petId) {
     }
 }
 
+/**
+ * Simulates a stored procedure to approve an adoption request
+ * Updates adoption request status and logs action
+ */
+async function approveAdoptionRequestFunction(adminId, requestId) {
+    try {
+        // Update adoption request status
+        const adoptionRequest = await AdoptionRequest.findByIdAndUpdate(
+            requestId,
+            { 
+                status: 'approved',
+                approvedDate: new Date()
+            },
+            { new: true }
+        ).populate('userId', 'name email')
+         .populate('petId', 'name type');
+
+        if (!adoptionRequest) {
+            throw new Error('Adoption request not found');
+        }
+
+        // Log admin action (audit)
+        const adminAction = new AdminAction({
+            adminId: adminId,
+            actionType: 'approve_adoption_request',
+            targetId: requestId,
+            targetType: 'adoption_request',
+            details: `Adoption request approved: ${adoptionRequest.userId.name} → ${adoptionRequest.petId.name}`,
+            timestamp: new Date()
+        });
+        await adminAction.save();
+
+        return { adoptionRequest, adminAction };
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Simulates a stored procedure to reject an adoption request
+ * Updates adoption request status and logs action
+ */
+async function rejectAdoptionRequestFunction(adminId, requestId) {
+    try {
+        // Update adoption request status
+        const adoptionRequest = await AdoptionRequest.findByIdAndUpdate(
+            requestId,
+            { status: 'rejected' },
+            { new: true }
+        ).populate('userId', 'name email')
+         .populate('petId', 'name type');
+
+        if (!adoptionRequest) {
+            throw new Error('Adoption request not found');
+        }
+
+        // Log admin action (audit)
+        const adminAction = new AdminAction({
+            adminId: adminId,
+            actionType: 'reject_adoption_request',
+            targetId: requestId,
+            targetType: 'adoption_request',
+            details: `Adoption request rejected: ${adoptionRequest.userId.name} → ${adoptionRequest.petId.name}`,
+            timestamp: new Date()
+        });
+        await adminAction.save();
+
+        return { adoptionRequest, adminAction };
+    } catch (error) {
+        throw error;
+    }
+}
+
 // ============================================
 // CHANGE STREAMS (TRIGGERS SIMULATION)
 // ============================================
@@ -403,6 +476,120 @@ router.patch('/admin/pets/:id/reject', requireAdmin, async (req, res) => {
             return res.status(404).json({ error: 'Pet not found' });
         }
         res.status(500).json({ error: 'Failed to reject pet' });
+    }
+});
+
+// ============================================
+// ROUTES - ADOPTION REQUESTS (VIEW SIMULATION)
+// ============================================
+
+// GET /api/admin/adoption-requests - Get all pending adoption requests (simulates VIEW with aggregation)
+router.get('/admin/adoption-requests', requireAdmin, async (req, res) => {
+    try {
+        // Simulate VIEW using aggregation pipeline with user and pet info
+        const pendingRequests = await AdoptionRequest.aggregate([
+            {
+                $match: {
+                    status: 'pending'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'pets',
+                    localField: 'petId',
+                    foreignField: '_id',
+                    as: 'pet'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$pet',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    requestId: '$_id',
+                    requestDate: 1,
+                    status: 1,
+                    user: {
+                        name: '$user.name',
+                        email: '$user.email'
+                    },
+                    pet: {
+                        name: '$pet.name',
+                        type: '$pet.type'
+                    }
+                }
+            },
+            {
+                $sort: { requestDate: -1 } // Newest first
+            }
+        ]);
+
+        res.json({ requests: pendingRequests });
+    } catch (error) {
+        console.error('Error fetching pending adoption requests:', error);
+        res.status(500).json({ error: 'Failed to fetch pending adoption requests' });
+    }
+});
+
+// PATCH /api/admin/adoption-requests/:id/approve - Approve an adoption request (uses stored procedure function)
+router.patch('/admin/adoption-requests/:id/approve', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const adminId = req.adminId;
+
+        // Use stored procedure function
+        const result = await approveAdoptionRequestFunction(adminId, id);
+
+        res.json({
+            message: 'Adoption request approved successfully',
+            adoptionRequest: result.adoptionRequest
+        });
+    } catch (error) {
+        console.error('Error approving adoption request:', error);
+        if (error.message === 'Adoption request not found') {
+            return res.status(404).json({ error: 'Adoption request not found' });
+        }
+        res.status(500).json({ error: 'Failed to approve adoption request' });
+    }
+});
+
+// PATCH /api/admin/adoption-requests/:id/reject - Reject an adoption request (uses stored procedure function)
+router.patch('/admin/adoption-requests/:id/reject', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const adminId = req.adminId;
+
+        // Use stored procedure function
+        const result = await rejectAdoptionRequestFunction(adminId, id);
+
+        res.json({
+            message: 'Adoption request rejected successfully',
+            adoptionRequest: result.adoptionRequest
+        });
+    } catch (error) {
+        console.error('Error rejecting adoption request:', error);
+        if (error.message === 'Adoption request not found') {
+            return res.status(404).json({ error: 'Adoption request not found' });
+        }
+        res.status(500).json({ error: 'Failed to reject adoption request' });
     }
 });
 

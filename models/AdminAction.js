@@ -10,7 +10,7 @@ const adminActionSchema = new mongoose.Schema({
     actionType: {
         type: String,
         required: [true, 'Action type is required'],
-        enum: ['approve_user', 'block_user', 'approve_pet', 'reject_pet']
+        enum: ['approve_user', 'block_user', 'approve_pet', 'reject_pet', 'approve_adoption_request', 'reject_adoption_request']
     },
     targetId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +19,7 @@ const adminActionSchema = new mongoose.Schema({
     targetType: {
         type: String,
         required: [true, 'Target type is required'],
-        enum: ['user', 'pet']
+        enum: ['user', 'pet', 'adoption_request']
     },
     details: {
         type: String,
