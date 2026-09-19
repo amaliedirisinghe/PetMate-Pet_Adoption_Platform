@@ -41,6 +41,33 @@ The system includes user registration and approval, authentication, pet submissi
 * Record administrative actions
 
 ---
+## Screenshots
+
+### Home Page
+
+![PetMate Home Page I](screenshots/Home%20Page%20I.png)
+
+![PetMate Home Page II](screenshots/Home%20Page%20II.png)
+
+![PetMate Home Page III](screenshots/Home%20Page%20III.png)
+
+### Authentication
+
+![PetMate Login](screenshots/Login.png)
+
+![PetMate Registration](screenshots/Registration.png)
+
+### Admin Dashboard
+
+![Admin Dashboard I](screenshots/Admin%20Dashboard%20I.png)
+
+![Admin Dashboard II](screenshots/Admin%20Dashboard%20II.png)
+
+![Admin Dashboard III](screenshots/Admin%20Dashboard%20III.png)
+
+### User Dashboard
+
+![PetMate User Dashboard](screenshots/User%20Dashboard.png)
 
 ## Tech Stack
 
