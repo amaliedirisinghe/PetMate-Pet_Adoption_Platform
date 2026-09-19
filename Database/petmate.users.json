@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "6aaccbf3e013cfa118a7a0c0"
+  },
+  "name": "Rashmi Bandara",
+  "email": "rashmi2002@gmail.com",
+  "password": "$2b$10$tlhmZw91NmQ7kRmFilfAOOediJy.K56l112nzPY3HZAtWk5fi2moa",
+  "phone": "0770378080",
+  "role": "user",
+  "status": "active",
+  "createdAt": {
+    "$date": "2026-09-18T05:28:19.673Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "name": "Admin",
+  "email": "admin@gmail.com",
+  "password": "$2b$10$O.tofLNviO05OSjGi0lxreo4JWH9v31c.0iSl1U9Hl/TDKIYIdU82",
+  "phone": "0750379090",
+  "role": "admin",
+  "status": "active",
+  "createdAt": {
+    "$date": "2026-09-18T05:31:03.300Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aaccd1be013cfa118a7a10d"
+  },
+  "name": "Amali Edirisinghe",
+  "email": "amali.edirisi@gmail.com",
+  "password": "$2b$10$5V4q4MwTLxFSNOZltqU.KeBZtnTnoifbtSMzUaVrIatIJCm.JLp6i",
+  "phone": "0770379294",
+  "role": "user",
+  "status": "active",
+  "createdAt": {
+    "$date": "2026-09-18T05:33:15.897Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "name": "Anne Perera",
+  "email": "anne@gmail.com",
+  "password": "$2b$10$pQFusxYWnNZkiohvmsXV3egDc0zkDrApr.3BQqrqqCCxmr4Jwtmwu",
+  "phone": "0770358090",
+  "role": "user",
+  "status": "active",
+  "createdAt": {
+    "$date": "2026-09-18T06:03:59.520Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd47fe013cfa118a7a1e0"
+  },
+  "name": "Peter Fernando",
+  "email": "peter@gmail.com",
+  "password": "$2b$10$EXjLJ7qe10T5WxGFA5ooIekz4B3FxnfccbUDfLMdBsHTcXHltb5Se",
+  "phone": "0710216204",
+  "role": "user",
+  "status": "pending",
+  "createdAt": {
+    "$date": "2026-09-18T06:04:47.911Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd4b8e013cfa118a7a1e4"
+  },
+  "name": "Charlie Mathew",
+  "email": "charlie@gmail.com",
+  "password": "$2b$10$P6lwwBXtgOOqCSbD/7XRxel1DeKx/MgGz/nGl/t5ODTJ6QOMqnmSO",
+  "phone": "0701399200",
+  "role": "user",
+  "status": "pending",
+  "createdAt": {
+    "$date": "2026-09-18T06:05:44.142Z"
+  },
+  "__v": 0
+}]

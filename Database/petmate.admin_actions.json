@@ -1,0 +1,144 @@
+[{
+  "_id": {
+    "$oid": "6aaccc1ee013cfa118a7a0d5"
+  },
+  "adminId": {
+    "$oid": "6aaccb78e013cfa118a7a0a9"
+  },
+  "actionType": "approve_user",
+  "targetId": {
+    "$oid": "6aaccbf3e013cfa118a7a0c0"
+  },
+  "targetType": "user",
+  "details": "User Rashmi Bandara (rashmi2002@gmail.com) approved",
+  "timestamp": {
+    "$date": "2026-09-18T05:29:02.354Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aaccd2ce013cfa118a7a120"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_user",
+  "targetId": {
+    "$oid": "6aaccd1be013cfa118a7a10d"
+  },
+  "targetType": "user",
+  "details": "User Amali Edirisinghe (amali.edirisi@gmail.com) approved",
+  "timestamp": {
+    "$date": "2026-09-18T05:33:32.181Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd10ae013cfa118a7a157"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_pet",
+  "targetId": {
+    "$oid": "6aacd0bce013cfa118a7a131"
+  },
+  "targetType": "pet",
+  "details": "Pet \"Tommy\" approved",
+  "timestamp": {
+    "$date": "2026-09-18T05:50:02.892Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd324e013cfa118a7a1a5"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_adoption_request",
+  "targetId": {
+    "$oid": "6aacd2dbe013cfa118a7a170"
+  },
+  "targetType": "adoption_request",
+  "details": "Adoption request approved: Rashmi Bandara → Tommy",
+  "timestamp": {
+    "$date": "2026-09-18T05:59:00.685Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd4d9e013cfa118a7a1f9"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_user",
+  "targetId": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "targetType": "user",
+  "details": "User Anne Perera (anne@gmail.com) approved",
+  "timestamp": {
+    "$date": "2026-09-18T06:06:17.570Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd5d6e013cfa118a7a228"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_pet",
+  "targetId": {
+    "$oid": "6aacd549e013cfa118a7a20c"
+  },
+  "targetType": "pet",
+  "details": "Pet \"Nick\" approved",
+  "timestamp": {
+    "$date": "2026-09-18T06:10:30.010Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacde98e013cfa118a7a284"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_pet",
+  "targetId": {
+    "$oid": "6aacde56e013cfa118a7a25f"
+  },
+  "targetType": "pet",
+  "details": "Pet \"Tommy\" approved",
+  "timestamp": {
+    "$date": "2026-09-18T06:47:52.715Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacf439e013cfa118a7a2c4"
+  },
+  "adminId": {
+    "$oid": "6aaccc97e013cfa118a7a0e7"
+  },
+  "actionType": "approve_pet",
+  "targetId": {
+    "$oid": "6aacf418e013cfa118a7a2ad"
+  },
+  "targetType": "pet",
+  "details": "Pet \"Black\" approved",
+  "timestamp": {
+    "$date": "2026-09-18T08:20:09.967Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,114 @@
+[{
+  "_id": {
+    "$oid": "6aacd421e013cfa118a7a1d6"
+  },
+  "name": "Kitty",
+  "type": "cat",
+  "ageYears": 0,
+  "ageMonths": 11,
+  "description": "A sweet and friendly cat found in an alley. She is gentle, playful, and looking for a loving forever home. 🐱❤️",
+  "photo": "/uploads/pets/images (1)-1789711393833-190974408.jpg",
+  "addedBy": {
+    "$oid": "6aaccbf3e013cfa118a7a0c0"
+  },
+  "status": "pending",
+  "createdAt": {
+    "$date": "2026-09-18T06:03:13.838Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd549e013cfa118a7a20c"
+  },
+  "name": "Nick",
+  "type": "dog",
+  "ageYears": 1,
+  "ageMonths": 2,
+  "description": "A healthy playful dog who can be trained. Looking for a lovely house.",
+  "photo": "/uploads/pets/dogs-savvy-2-1789711689657-598354733.jpg",
+  "addedBy": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "status": "approved",
+  "createdAt": {
+    "$date": "2026-09-18T06:08:09.662Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacd5bce013cfa118a7a211"
+  },
+  "name": "Kiri",
+  "type": "cat",
+  "ageYears": 0,
+  "ageMonths": 5,
+  "description": "Looking for a loving person, who can take care of the kitten well. Playful and a cute kitten.",
+  "photo": "/uploads/pets/images (2)-1789711804106-540391581.jpg",
+  "addedBy": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "status": "pending",
+  "createdAt": {
+    "$date": "2026-09-18T06:10:04.109Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacde56e013cfa118a7a25f"
+  },
+  "name": "Tommy",
+  "type": "dog",
+  "ageYears": 1,
+  "ageMonths": 0,
+  "description": "Friendly dog found near a railway station, in good health. Looking for a lovely family.",
+  "photo": "/uploads/pets/images-1789714006299-601966922.jpg",
+  "addedBy": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "status": "approved",
+  "createdAt": {
+    "$date": "2026-09-18T06:46:46.302Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacf418e013cfa118a7a2ad"
+  },
+  "name": "Black",
+  "type": "cat",
+  "ageYears": 0,
+  "ageMonths": 9,
+  "description": "In good health, Playful. Looking for a lovely cat person.",
+  "photo": "/uploads/pets/images (3)-1789719576168-283149283.jpg",
+  "addedBy": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "status": "approved",
+  "createdAt": {
+    "$date": "2026-09-18T08:19:36.172Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6aacf542e013cfa118a7a2e0"
+  },
+  "name": "Tan",
+  "type": "dog",
+  "ageYears": 0,
+  "ageMonths": 4,
+  "description": "Cute little puppy in good health. Innocent and playful. Looking for a lovely family.",
+  "photo": "/uploads/pets/images (4)-1789719874327-739040427.jpg",
+  "addedBy": {
+    "$oid": "6aacd44fe013cfa118a7a1dc"
+  },
+  "status": "pending",
+  "createdAt": {
+    "$date": "2026-09-18T08:24:34.330Z"
+  },
+  "__v": 0
+}]
