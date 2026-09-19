@@ -45,29 +45,31 @@ The system includes user registration and approval, authentication, pet submissi
 
 ### Home Page
 
-![PetMate Home Page I](screenshots/Home%20Page%20I.png)
+![PetMate Home Page I](Screenshots/1.%20Home%20Page%20I.png)
 
-![PetMate Home Page II](screenshots/Home%20Page%20II.png)
+![PetMate Home Page II](Screenshots/2.%20Home%20Page%20II.png)
 
-![PetMate Home Page III](screenshots/Home%20Page%20III.png)
+![PetMate Home Page III](Screenshots/3.%20Home%20Page%20III.png)
 
 ### Authentication
 
-![PetMate Login](screenshots/Login.png)
+![PetMate Login](Screenshots/4.%20Login.png)
 
-![PetMate Registration](screenshots/Registration.png)
+![PetMate Registration](Screenshots/5.%20Registration.png)
 
 ### Admin Dashboard
 
-![Admin Dashboard I](screenshots/Admin%20Dashboard%20I.png)
+![Admin Dashboard I](Screenshots/6.%20Admin%20Dashboard%20I.png)
 
-![Admin Dashboard II](screenshots/Admin%20Dashboard%20II.png)
+![Admin Dashboard II](Screenshots/7.%20Admin%20Dashboard%20II.png)
 
-![Admin Dashboard III](screenshots/Admin%20Dashboard%20III.png)
+![Admin Dashboard III](Screenshots/8.%20Admin%20Dashboard%20III.png)
 
 ### User Dashboard
 
-![PetMate User Dashboard](screenshots/User%20Dashboard.png)
+![PetMate User Dashboard](Screenshots/9.%20User%20Dashboard.png)
+
+
 
 ## Tech Stack
 
