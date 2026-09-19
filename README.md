@@ -1,187 +1,481 @@
 # PetMate - Social Service Pet Adoption Platform
 
-A university project for a pet adoption platform with user registration, account status management, and authentication.
+PetMate is a university project that provides a simple social-service style platform for connecting users with pets available for adoption.
+
+The system includes user registration and approval, authentication, pet submission and approval, adoption requests, and an administrator dashboard for managing the platform.
+
+> **University Project:** IT-250
+
+---
 
 ## Features
 
-- **User Registration**: Create account with name, email, password, and phone
-- **Account Status Management**: Pending → Active → Dashboard flow
-- **Session-based Authentication**: Secure login with Express sessions
-- **MongoDB Integration**: User data stored in MongoDB with Mongoose
-- **Password Hashing**: Secure password storage with bcrypt
+### User Features
+
+* User registration with name, email, password, and phone
+* Account status management:
+
+  * Pending
+  * Active
+  * Blocked
+* Session-based authentication
+* User dashboard
+* View available pets
+* Add pets for adoption
+* Upload pet photos
+* Specify pet age in years and months
+* View submitted pets
+* Submit adoption requests
+* View adoption request status
+* Logout functionality
+
+### Administrator Features
+
+* Administrator authentication
+* View and manage registered users
+* Approve or block user accounts
+* Review pets submitted for adoption
+* Approve or reject pet listings
+* Review adoption requests
+* Manage adoption request status
+* Record administrative actions
+
+---
 
 ## Tech Stack
 
 ### Frontend
-- HTML5, CSS3, JavaScript
-- Bootstrap 5
-- Google Fonts (Poppins, Inter)
+
+* HTML5
+* CSS3
+* JavaScript
+* Bootstrap 5
+* Google Fonts
 
 ### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- bcrypt
-- express-session
 
-## Setup Instructions
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* bcryptjs
+* express-session
+* CORS
+* Multer
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (local installation or MongoDB Atlas)
-- npm or yarn
-
-### Installation
-
-1. **Clone or navigate to the project directory**
-   ```bash
-   cd IT-250
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   - Copy `.env.example` to `.env`
-   - Update MongoDB URI if needed (default: `mongodb://localhost:27017/petmate`)
-   - Change `SESSION_SECRET` for production
-
-4. **Start MongoDB**
-   - If using local MongoDB, ensure it's running:
-     ```bash
-     # Windows
-     net start MongoDB
-     
-     # macOS/Linux
-     sudo systemctl start mongod
-     ```
-   - Or use MongoDB Atlas and update `MONGODB_URI` in `.env`
-
-5. **Start the server**
-   ```bash
-   npm start
-   ```
-   
-   For development with auto-reload:
-   ```bash
-   npm run dev
-   ```
-
-6. **Access the application**
-   - Open browser: `http://localhost:3000`
-
-## User Flow
-
-1. **Homepage** → View featured pets and how it works
-2. **Register** → Create account (status: pending)
-3. **Status Page** → Check account approval status
-4. **Login** → Authenticate (redirects based on status)
-5. **Dashboard** → User dashboard (requires active status)
-
-## API Endpoints
-
-### POST `/api/register`
-Register a new user
-- **Body**: `{ name, email, password, phone }`
-- **Response**: `{ message, userId }`
-
-### POST `/api/login`
-Login user
-- **Body**: `{ email, password }`
-- **Response**: `{ redirect: "status" | "dashboard", message }`
-
-### GET `/api/user/status`
-Get current user's status
-- **Query**: `?email=user@example.com` (optional if session exists)
-- **Response**: `{ status: "pending" | "active" | "blocked", email }`
-
-### POST `/api/logout`
-Logout user
-- **Response**: `{ message }`
-
-## Database Schema
-
-### User Collection
-```javascript
-{
-  name: String (required),
-  email: String (required, unique),
-  password: String (required, hashed),
-  phone: String (optional),
-  role: String (default: "user"),
-  status: String (default: "pending", enum: ["pending", "active", "blocked"]),
-  createdAt: Date (default: now)
-}
-```
-
-## Testing the Application
-
-1. **Register a new user**
-   - Go to Register page
-   - Fill in the form
-   - Account will be created with status "pending"
-
-2. **Check status**
-   - After registration, you'll be redirected to status page
-   - Click "Check Status" to verify current status
-
-3. **Activate account (for testing)**
-   - Use MongoDB Compass or mongo shell
-   - Update user status to "active":
-     ```javascript
-     db.users.updateOne(
-       { email: "user@example.com" },
-       { $set: { status: "active" } }
-     )
-     ```
-
-4. **Login**
-   - Use registered email and password
-   - If status is "active", you'll be redirected to dashboard
-   - If status is "pending", you'll be redirected to status page
+---
 
 ## Project Structure
 
-```
+```text
 IT-250/
+│
+├── config/
+│   └── upload.js
+│
+├── Database/
+│   ├── petmate.users.json
+│   ├── petmate.pets.json
+│   ├── petmate.adoptionrequests.json
+│   ├── petmate.admin_actions.json
+│   └── seed.js
+│
 ├── models/
-│   └── User.js          # User Mongoose model
+│   ├── User.js
+│   ├── Pet.js
+│   ├── AdoptionRequest.js
+│   └── AdminAction.js
+│
 ├── routes/
-│   └── auth.js          # Authentication routes
-├── index.html           # Homepage
-├── register.html        # Registration page
-├── status.html          # Account status page
-├── login.html           # Login page
-├── dashboard.html       # User dashboard
-├── styles.css           # Custom styles
-├── server.js            # Express server
-├── package.json         # Dependencies
-└── README.md            # This file
+│   ├── auth.js
+│   ├── pets.js
+│   ├── adoptionRequests.js
+│   └── admin.js
+│
+├── admin-dashboard.html
+├── dashboard.html
+├── index.html
+├── login.html
+├── register.html
+├── status.html
+├── styles.css
+│
+├── server.js
+├── package.json
+├── package-lock.json
+├── .env
+├── .gitignore
+└── README.md
 ```
 
-## Color Scheme
+> The `.env` file is used locally and is intentionally excluded from GitHub.
 
-- Primary: #6EC1A6 (mint green)
-- Secondary: #F4A261 (soft orange)
-- Background: #F9FAF7
-- Card background: #FFFFFF
-- Text primary: #2F3E46
-- Text secondary: #6C757D
-- Status colors:
-  - Pending: #FACC15
-  - Approved: #22C55E
-  - Blocked: #EF4444
+---
+
+## Prerequisites
+
+Before running PetMate, install:
+
+* Node.js 14 or higher
+* npm
+* MongoDB Community Server or MongoDB Atlas
+* Git (if cloning the project)
+
+MongoDB should be running before starting the application.
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/amaliedirisinghe/IT-250.git
+cd IT-250
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+SESSION_SECRET=your-local-session-secret
+MONGODB_URI=mongodb://127.0.0.1:27017/petmate
+```
+
+For security, do not commit the `.env` file to GitHub.
+
+### 4. Start MongoDB
+
+If using a local MongoDB installation, make sure the MongoDB service is running.
+
+The default database used by PetMate is:
+
+```text
+petmate
+```
+
+### 5. Set up the database
+
+The project includes a database setup script that imports the sample collections and recreates the required database views.
+
+Run:
+
+```bash
+npm run setup
+```
+
+The setup creates:
+
+* `users`
+* `pets`
+* `adoptionrequests`
+* `admin_actions`
+* `pendingUsersView`
+* `pendingPetsView`
+* `pendingAdoptionRequestsView`
+
+> **Note:** The setup script restores the included sample data and recreates the collections. It should not be run when you want to preserve changes made to your current database.
+
+### 6. Start the application
+
+For normal use:
+
+```bash
+npm start
+```
+
+For development with automatic server restarting:
+
+```bash
+npm run dev
+```
+
+The server runs at:
+
+```text
+http://localhost:3000
+```
+
+Open the address in your browser to access PetMate.
+
+---
+
+## Environment Variables
+
+PetMate uses environment variables for configuration.
+
+| Variable         | Description                            |
+| ---------------- | -------------------------------------- |
+| `MONGODB_URI`    | MongoDB connection string              |
+| `SESSION_SECRET` | Secret used to secure Express sessions |
+
+Example:
+
+```env
+MONGODB_URI=mongodb://127.0.0.1:27017/petmate
+SESSION_SECRET=your-local-session-secret
+```
+
+Never commit real production credentials or secrets to the repository.
+
+---
+
+## User Flow
+
+```text
+Homepage
+   ↓
+Register
+   ↓
+Account Status: Pending
+   ↓
+Administrator Approval
+   ↓
+Account Status: Active
+   ↓
+Login
+   ↓
+User Dashboard
+   ↓
+View Available Pets
+   ↓
+Submit Adoption Request
+```
+
+Users can also submit their own pets for adoption:
+
+```text
+User Dashboard
+   ↓
+Add Pet
+   ↓
+Pet Status: Pending
+   ↓
+Administrator Review
+   ↓
+Pet Approved
+   ↓
+Appears in Available Pets
+```
+
+---
+
+## Administrator Flow
+
+The administrator can:
+
+1. View pending user registrations
+2. Approve or block users
+3. View pets submitted by users
+4. Approve or reject pet listings
+5. Review adoption requests
+6. Update adoption request status
+7. View recorded administrative actions
+
+---
+
+## Database
+
+PetMate uses MongoDB as its database.
+
+### Collections
+
+#### `users`
+
+Stores registered user accounts.
+
+```javascript
+{
+  name: String,
+  email: String,
+  password: String,
+  phone: String,
+  role: String,
+  status: String,
+  createdAt: Date
+}
+```
+
+Passwords are hashed using bcrypt before being stored.
+
+#### `pets`
+
+Stores pets submitted for adoption.
+
+```javascript
+{
+  name: String,
+  type: String,
+  ageYears: Number,
+  ageMonths: Number,
+  description: String,
+  photo: String,
+  addedBy: ObjectId,
+  status: String,
+  createdAt: Date
+}
+```
+
+#### `adoptionrequests`
+
+Stores adoption requests submitted by users.
+
+```javascript
+{
+  petId: ObjectId,
+  userId: ObjectId,
+  status: String,
+  requestDate: Date,
+  approvedDate: Date
+}
+```
+
+#### `admin_actions`
+
+Stores administrator activity and approval actions.
+
+```javascript
+{
+  adminId: ObjectId,
+  actionType: String,
+  targetId: ObjectId,
+  targetType: String,
+  details: String,
+  timestamp: Date
+}
+```
+
+---
+
+## Database Views
+
+The project also includes MongoDB views for administrator-related pending records:
+
+* `pendingUsersView`
+* `pendingPetsView`
+* `pendingAdoptionRequestsView`
+
+These provide filtered information for pending users, pets, and adoption requests.
+
+---
+
+## Testing the Application
+
+### Register a User
+
+1. Open the PetMate homepage.
+2. Select **Register**.
+3. Enter the required details.
+4. Submit the registration.
+5. The account will initially have a `pending` status.
+
+### Approve the User
+
+An administrator can approve the user through the administrator dashboard.
+
+Once approved, the user's status becomes `active`.
+
+### Login
+
+1. Open the Login page.
+2. Enter the registered email and password.
+3. Active users are redirected to the dashboard.
+4. Pending users are redirected to the account status page.
+5. Blocked users cannot access the dashboard.
+
+### Add a Pet
+
+An active user can:
+
+1. Open the dashboard.
+2. Select **Add a Pet for Adoption**.
+3. Enter the pet's details.
+4. Specify age in years and months.
+5. Upload a pet photo.
+6. Submit the listing.
+
+The pet remains pending until an administrator approves it.
+
+### Request Adoption
+
+After a pet is approved, users can submit an adoption request.
+
+The request is then sent to the administrator for review.
+
+---
+
+## API Endpoints
+
+### Authentication
+
+| Method | Endpoint           | Description                       |
+| ------ | ------------------ | --------------------------------- |
+| POST   | `/api/register`    | Register a new user               |
+| POST   | `/api/login`       | Authenticate a user               |
+| POST   | `/api/logout`      | Logout                            |
+| GET    | `/api/user`        | Get current user                  |
+| GET    | `/api/user/status` | Get current user's account status |
+
+Additional endpoints are implemented for pets, adoption requests, and administrator operations.
+
+---
+
+## Security
+
+PetMate includes several basic security measures:
+
+* Passwords are hashed using bcrypt.
+* Authentication uses Express sessions.
+* Session secrets are stored in environment variables.
+* `.env` is excluded from version control.
+* Uploaded files are excluded from the Git repository.
+* MongoDB connection details can be configured through environment variables.
+
+---
+
+## Design
+
+PetMate uses a simple, friendly design intended for a pet adoption service.
+
+### Color Scheme
+
+| Purpose         | Color     |
+| --------------- | --------- |
+| Primary         | `#6EC1A6` |
+| Secondary       | `#F4A261` |
+| Background      | `#F9FAF7` |
+| Card Background | `#FFFFFF` |
+| Primary Text    | `#2F3E46` |
+| Secondary Text  | `#6C757D` |
+
+---
+
+## Demo Data
+
+The repository contains sample MongoDB data for demonstration and testing purposes.
+
+The included database records are **fictional/demo records** and are not intended to represent real users.
+
+---
 
 ## Notes
 
-- This is a university project focusing on the initial user flow
-- Admin dashboard, pet listings, and adoption features are out of scope
-- Session-based authentication is used for security
-- Passwords are hashed using bcrypt before storage
+* PetMate was developed as a university project.
+* The project does not include payment functionality.
+* MongoDB is required for the application to operate.
+* The included `Database/seed.js` script is provided to recreate the sample database environment.
+* Uploaded pet images are stored locally and are excluded from the Git repository.
+* The application is intended for educational and demonstration purposes.
+
+---
 
 ## License
 
-University Project - IT-250
+This project was developed as a university project for **IT-250**.
