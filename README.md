@@ -227,6 +227,26 @@ Never commit real production credentials or secrets to the repository.
 
 ---
 
+## Demo Admin Account
+
+The project includes a demo administrator account for testing the Admin Dashboard.
+
+**Login credentials:**
+
+* **Email:** `admin@gmail.com`
+* **Password:** `123456`
+
+After logging in with these credentials, you can access the **Admin Dashboard** and test:
+
+* User account approval and blocking
+* Pet listing approval and rejection
+* Adoption request management
+* Administrative action records
+
+> **Note:** These are fictional demo credentials created specifically for this university project. They must not be used for real accounts or production systems.
+
+---
+
 ## User Flow
 
 ```text
@@ -378,9 +398,11 @@ These provide filtered information for pending users, pets, and adoption request
 
 ### Approve the User
 
-An administrator can approve the user through the administrator dashboard.
-
-Once approved, the user's status becomes `active`.
+1. Log in using the demo administrator account.
+2. Open the **Admin Dashboard**.
+3. Review the pending user.
+4. Approve the user account.
+5. The user's status becomes `active`.
 
 ### Login
 
@@ -403,11 +425,23 @@ An active user can:
 
 The pet remains pending until an administrator approves it.
 
+### Approve a Pet
+
+1. Log in to the Admin Dashboard.
+2. Open the pending pets section.
+3. Review the submitted pet.
+4. Approve the pet listing.
+5. The approved pet becomes available to users.
+
 ### Request Adoption
 
-After a pet is approved, users can submit an adoption request.
+After a pet is approved:
 
-The request is then sent to the administrator for review.
+1. Log in as an active user.
+2. Open the User Dashboard.
+3. Select an available pet.
+4. Submit an adoption request.
+5. The request is sent to the administrator for review.
 
 ---
 
